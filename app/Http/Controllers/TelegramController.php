@@ -14,7 +14,10 @@ class TelegramController extends Controller
     {
         try {
             $telegram = new Telegram(Config::get('telegram.api_key'), Config::get('telegram.bot_username'));
-            $result = $telegram->setWebhook(Config::get('telegram.webhook.url'));
+            $url = secure_url(Config::get('telegram.api_key') . '/webhook');
+            $result = $telegram->setWebhook($url, [
+                'allowed_updates' => ['message', 'chat_member'],
+            ]);
 
             if ($result->isOk()) {
                 return response()->json(['status' => 'Webhook set successfully']);
@@ -47,10 +50,14 @@ class TelegramController extends Controller
             
             $telegram->enableAdmins(Config::get('telegram.admins'));
     
-            $telegram->addCommandsPaths(Config::get('telegram.commands.paths'));
+            $telegram->addCommandsPaths([
+                app_path('Telegram/CustomCommands'),
+            ]);
             
             $telegram->enableLimiter(Config::get('telegram.limiter'));
 
+            Log::info('Loaded commands:', $telegram->getCommandsList());
+            
             $telegram->handle();
 
         } catch (TelegramException $e) {

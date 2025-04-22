@@ -6,11 +6,11 @@ use Longman\TelegramBot\Commands\UserCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 
-class HelloCommand extends UserCommand
+class PingCommand extends UserCommand
 {
-    protected $name = 'hello';
-    protected $description = 'Say hello';
-    protected $usage = '/hello';
+    protected $name = 'ping';
+    protected $description = 'Simple ping-pong test';
+    protected $usage = '/ping';
     protected $version = '1.0.0';
 
     public function execute(): ServerResponse
@@ -19,7 +19,7 @@ class HelloCommand extends UserCommand
 
         return Request::sendMessage([
             'chat_id' => $chat_id,
-            'text'    => 'Hello from Laravel Telegram Bot! 👋',
+            'text'    => '🏓 Pong!',
         ]);
     }
 }
