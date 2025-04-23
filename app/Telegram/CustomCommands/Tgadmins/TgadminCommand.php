@@ -69,7 +69,7 @@ class TgadminCommand extends UserCommand
             $message = "📍 The *{$key}* channel ID is:\n`{$value}`\n\n";
         
             $message .= $isCurrent
-                ? "✅ You are currently in the *configured {$key} channel*."
+                ? "✅ This chat is the *configured {$key} channel*."
                 : "ℹ️ This chat is *not* the configured {$key} channel.";
         
             return Request::sendMessage([

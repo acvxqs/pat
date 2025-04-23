@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -14,7 +15,10 @@ class User extends Authenticatable
 
     public $incrementing = false;
 
-    protected $fillable = ['telegram_id', 'name'];
+    protected $fillable = [
+        'telegram_id',
+        'name'
+    ];
 
     protected $hidden = [];
 
@@ -24,7 +28,7 @@ class User extends Authenticatable
         return null;
     }
     
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_user', 'telegram_id', 'role_id');
     }

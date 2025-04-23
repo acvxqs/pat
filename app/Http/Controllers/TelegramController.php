@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Longman\TelegramBot\Telegram;
-use Longman\TelegramBot\Exception\TelegramException;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
+use Longman\TelegramBot\Exception\TelegramException;
+use Longman\TelegramBot\Telegram;
 
 class TelegramController extends Controller
 {

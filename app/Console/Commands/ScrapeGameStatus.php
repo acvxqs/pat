@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\ScraperException;
 use App\Models\Round;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
@@ -18,12 +19,12 @@ class ScrapeGameStatus extends Command
     {
         try {
             $client = new Client();
-            $html = (string) $client->get(Config::get('planetarion.status_main_game'))->getBody();
+            $url = Config::get('planetarion.status_main_game');
+            $html = (string) $client->get($url)->getBody();
             $crawler = new Crawler($html);
 
             $textBlock = $crawler->filter('#game_status')->text();
 
-            // Extract core values
             preg_match('/Round (\d+)\s*-\s*(.+)/', $textBlock, $m);
             $roundNumber = (int) $m[1] ?? null;
             $roundName = trim($m[2] ?? '');
@@ -38,27 +39,26 @@ class ScrapeGameStatus extends Command
                 $lastTickAt = Carbon::createFromFormat('H:i l jS F Y', "$m[1] $m[3]", $tz);
             }
 
-            // Other values
             $fields = [
                 'tick_speed' => self::extractSeconds($textBlock, '/Tick Speed:\s*(\d+)\s*(minute|hour)s?/i'),
                 'ticking' => self::extractBoolean($textBlock, '/Ticking:\s*(Yes|No)/i'),
-                'max_membercount' => self::extractInt($textBlock, '/Max Membercount:\s*(\d+)/'),
-                'members_counting_towards_alliance_score' => self::extractInt($textBlock, '/Members Counting Towards Alliance Score:\s*(\d+)/'),
-                'xp_per_tick_defending_universe' => self::extractInt($textBlock, '/XP\/Tick Defending Universe:\s*(\d+)/'),
-                'xp_per_tick_defending_galaxy' => self::extractInt($textBlock, '/XP\/Tick Defending Galaxy:\s*(\d+)/'),
-                'xp_landing_defense' => self::extractInt($textBlock, '/XP Landing Defense:\s*(\d+)/'),
-                'max_cap' => self::extractInt($textBlock, '/Max Cap:\s*(\d+)%/'),
-                'max_structures_destroyed' => self::extractInt($textBlock, '/Max Structures Destroyed:\s*(\d+)%/'),
-                'salvage_from_attacking_ships' => self::extractInt($textBlock, '/Salvage From Attacking Ships:\s*(\d+)%/'),
-                'salvage_from_defending_ships' => self::extractInt($textBlock, '/Salvage From Defending Ships:\s*(\d+)%/'),
-                'asteroid_armor' => self::extractInt($textBlock, '/Asteroid Armor:\s*(\d+)/'),
-                'construction_armor' => self::extractInt($textBlock, '/Construction Armor:\s*(\d+)/'),
-                'damage_done_on_primary_target' => self::extractInt($textBlock, '/Damage Done On Primary Target:\s*(\d+)%/'),
-                'damage_done_on_secondary_target' => self::extractInt($textBlock, '/Damage Done On Secondary Target:\s*(\d+)%/'),
-                'damage_done_on_tertiary_target' => self::extractInt($textBlock, '/Damage Done On Tertiary Target:\s*(\d+)%/'),
+                'max_membercount' => self::extractInt($textBlock, '/Max Membercount:\s*(\d+)/i'),
+                'members_counting_towards_alliance_score' => self::extractInt($textBlock, '/Members Counting Towards Alliance Score:\s*(\d+)/i'),
+                'xp_per_tick_defending_universe' => self::extractInt($textBlock, '/XP\/Tick Defending Universe:\s*(\d+)/i'),
+                'xp_per_tick_defending_galaxy' => self::extractInt($textBlock, '/XP\/Tick Defending Galaxy:\s*(\d+)/i'),
+                'xp_landing_defense' => self::extractInt($textBlock, '/XP Landing Defense:\s*(\d+)/i'),
+                'max_cap' => self::extractInt($textBlock, '/Max Cap:\s*(\d+)%/i'),
+                'max_structures_destroyed' => self::extractInt($textBlock, '/Max Structures Destroyed:\s*(\d+)%/i'),
+                'salvage_from_attacking_ships' => self::extractInt($textBlock, '/Salvage From Attacking Ships:\s*(\d+)%/i'),
+                'salvage_from_defending_ships' => self::extractInt($textBlock, '/Salvage From Defending Ships:\s*(\d+)%/i'),
+                'asteroid_armor' => self::extractInt($textBlock, '/Asteroid Armor:\s*(\d+)/i'),
+                'construction_armor' => self::extractInt($textBlock, '/Construction Armor:\s*(\d+)/i'),
+                'damage_done_on_primary_target' => self::extractInt($textBlock, '/Damage Done On Primary Target:\s*(\d+)%/i'),
+                'damage_done_on_secondary_target' => self::extractInt($textBlock, '/Damage Done On Secondary Target:\s*(\d+)%/i'),
+                'damage_done_on_tertiary_target' => self::extractInt($textBlock, '/Damage Done On Tertiary Target:\s*(\d+)%/i'),
                 'pods_die_when_capping' => self::extractBoolean($textBlock, '/Pods Die When Capping:\s*(Yes|No)/i'),
                 'structure_killers_die' => self::extractBoolean($textBlock, '/Structure Killers Die:\s*(Yes|No)/i'),
-                'stealship_steal_die_ratio' => self::extractInt($textBlock, '/Stealship Steal\/Die Ratio:\s*(\d+)%/')
+                'stealship_steal_die_ratio' => self::extractInt($textBlock, '/Stealship Steal\/Die Ratio:\s*(\d+)%/i')
             ];
 
             if ($roundNumber && $roundName) {
@@ -77,6 +77,7 @@ class ScrapeGameStatus extends Command
 
         } catch (\Throwable $e) {
             $this->error("Scraping error: " . $e->getMessage());
+            throw new ScraperException('Failed to parse game status', $roundNumber, ScraperException::GAMESTATUS, $e);
         }
     }
 

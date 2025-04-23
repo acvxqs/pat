@@ -8,7 +8,10 @@ class Setting extends Model
 {
     protected $primaryKey = 'key';
     public $incrementing = false;
-    protected $fillable = ['key', 'value'];
+    protected $fillable = [
+        'key', 
+        'value'
+    ];
 
     public static function get($key, $default = null)
     {
