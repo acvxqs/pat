@@ -52,6 +52,7 @@ class TelegramController extends Controller
     
             $telegram->addCommandsPaths([
                 app_path('Telegram/CustomCommands'),
+                app_path('Telegram/CustomCommands/Tgadmins'),
             ]);
             
             $telegram->enableLimiter(Config::get('telegram.limiter'));

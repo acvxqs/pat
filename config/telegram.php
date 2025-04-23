@@ -13,7 +13,7 @@ return [
     'bot_username' => env('TELEGRAM_BOT_USERNAME'), // Your Telegram Bot username (without @)
 
     // Define all IDs of admin users
-    'admins'       => explode(',', env('TELEGRAM_BOT_ADMINS')), // Your Telegram user IDs (comma separated)
+    'admins'       => explode(',', env('TELEGRAM_BOT_ADMINS')), // Your Telegram user IDs in an array
 
     // Set custom Upload and Download paths
     // 'paths'        => [

@@ -86,9 +86,17 @@ class ScrapeGameStatus extends Command
     }
 
     private static function extractBoolean($text, $regex): ?bool
-    {
-        return preg_match($regex, $text, $m) ? strtolower($m[1]) === 'yes' : null;
+{
+    if (preg_match($regex, $text, $m)) {
+        $value = strtolower($m[1]);
+
+        if ($value === 'yes') {
+            return true;
+        }
+        return false;
     }
+    return null;
+}
 
     private static function extractSeconds($text, $regex): ?int
     {
