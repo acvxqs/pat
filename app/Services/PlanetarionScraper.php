@@ -112,7 +112,7 @@ class PlanetarionScraper
     {
         try {
             $client = new Client();
-            $url = Config::get('planetarion_manual.governments');
+            $url = Config::get('planetarion.planetarion_manual.governments');
             $response = $client->get($url);
 
             $html = $response->getBody()->getContents();
@@ -162,7 +162,7 @@ class PlanetarionScraper
     {
         try {
             $client = new Client();
-            $url = Config::get('planetarion_manual.races');
+            $url = Config::get('planetarion.planetarion_manual.races');
             $response = $client->get($url);
     
             $html = $response->getBody()->getContents();
@@ -223,7 +223,7 @@ class PlanetarionScraper
     {
         try {
             $client = new Client();
-            $url = Config::get('planetarion_manual.stats_xml');
+            $url = Config::get('planetarion.planetarion_manual.stats_xml');
             $response = $client->get($url);
             $xml = new SimpleXMLElement($response->getBody()->getContents());
     
@@ -278,6 +278,42 @@ class PlanetarionScraper
         } catch (\Throwable $e) {
             throw new ScraperException('Failed to parse statsxml', $roundNumber, ScraperException::STATSXML, $e);
         }
+    }
+
+    public static function parsePlanets(int $roundNumber): void
+    {
+        $client = new Client();
+        $url = Config::get('planetarion.botfiles.planet_listing');
+        $response = $client->get($url);
+
+        $html = $response->getBody()->getContents();
+    }
+
+    public static function parseGalaxies(int $roundNumber): void
+    {
+        $client = new Client();
+        $url = Config::get('planetarion.botfiles.galaxy_listing');
+        $response = $client->get($url);
+
+        $html = $response->getBody()->getContents();      
+    }
+
+    public static function parseAlliances(int $roundNumber): void
+    {
+        $client = new Client();
+        $url = Config::get('planetarion.botfiles.alliance_listing');
+        $response = $client->get($url);
+
+        $html = $response->getBody()->getContents();
+    }
+
+    public static function parseUserfeed(int $roundNumber): void
+    {
+        $client = new Client();
+        $url = Config::get('planetarion.botfiles.user_feed');
+        $response = $client->get($url);
+
+        $html = $response->getBody()->getContents();
     }
 
     private static function extractInt(string $text, string $regex, int $roundNumber = 0, int $errorCode = ScraperException::GENERIC): int
