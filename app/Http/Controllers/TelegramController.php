@@ -14,7 +14,7 @@ class TelegramController extends Controller
     {
         try {
             $telegram = new Telegram(Config::get('telegram.api_key'), Config::get('telegram.bot_username'));
-            $url = secure_url(Config::get('telegram.api_key') . '/webhook');
+            $url = route('telegram.webhook');
             $result = $telegram->setWebhook($url, [
                 'allowed_updates' => ['message', 'chat_member'],
             ]);
@@ -61,8 +61,11 @@ class TelegramController extends Controller
             
             $telegram->handle();
 
+            return response()->json(['status' => 'Webhook handled']);
+
         } catch (TelegramException $e) {
             Log::error($e->getMessage());
+            return response()->json(['status' => 'Webhook error'], 500);
         }
     }
 }

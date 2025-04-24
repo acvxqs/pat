@@ -4,18 +4,17 @@ namespace App\Telegram\CustomCommands\Tgadmins;
 
 use App\Models\Setting;
 use App\Telegram\Traits\TgadminGate;
-use Longman\TelegramBot\Commands\UserCommand;
+use Longman\TelegramBot\Commands\AdminCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
 
-class TgadminCommand extends UserCommand
+class TgadminCommand extends AdminCommand
 {
-    use TgadminGate;
-
     protected $name = 'tgadmin';
     protected $description = 'Manage Telegram bot admin settings';
     protected $usage = '/tgadmin <set|get> <home|scan>';
     protected $version = '1.0.0';
+    protected $private_only = false;
 
     public function execute(): ServerResponse
     {
