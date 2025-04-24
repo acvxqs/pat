@@ -9,10 +9,15 @@ use Longman\TelegramBot\Request;
 
 class ScraperException extends Exception
 {
-    public const GAMESTATUS = 1000;
-    public const GOVERNMENT = 1001;
-    public const RACES      = 1002;
-    public const STATSXML   = 1003;
+    public const GENERIC    = 0;    // Generic error
+    public const GAMESTATUS = 1000; // Runs every minute
+    public const GOVERNMENT = 1001; // Only runs when new round is created
+    public const RACES      = 1002; // Only runs when new round is created
+    public const STATSXML   = 1003; // Only runs when new round is created
+    public const PLANETS    = 1004; // Only runs when current_tick wasChanged
+    public const GALAXIES   = 1005; // Only runs when current_tick wasChanged
+    public const ALLIANCES  = 1006; // Only runs when current_tick wasChanged
+    public const USERFEED   = 1007; // Only runs when current_tick wasChanged
 
     public int $round;
 
