@@ -12,8 +12,8 @@ class TgadminCommand extends AdminCommand
 {
     protected $name = 'tgadmin';
     protected $description = 'Manage Telegram bot admin settings';
-    protected $usage = '/tgadmin <set|get> <home|scan>';
-    protected $version = '1.0.0';
+    protected $usage = '/tgadmin <set|get> <home|scan|admin>';
+    protected $version = '1.0.1';
     protected $private_only = false;
 
     public function execute(): ServerResponse
@@ -25,18 +25,29 @@ class TgadminCommand extends AdminCommand
         if (count($args) !== 2) {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => "❗ Usage: /tgadmin <set|get> <home|scan>",
+                'text' => "❗ Usage: /tgadmin <set|get> <home|scan|admin>",
             ]);
         }
 
         [$action, $key] = $args;
+        $action = strtolower($action);
+        $key = strtolower($key);
+        
+        $validActions = ['set', 'get'];
+        if (!in_array($action, $validActions)) {
+            return Request::sendMessage([
+                'chat_id' => $chat_id,
+                'text' => "❗ Invalid action: `$action`. Use `set` or `get`.",
+                'parse_mode' => 'Markdown',
+            ]);
+        }
 
-        $validKeys = ['home', 'scan'];
+        $validKeys = ['home', 'scan', 'admin'];
 
         if (!in_array($key, $validKeys)) {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => "❗ Invalid key: `$key`. Use one of: home, scan.",
+                'text' => "❗ Invalid key: `$key`. Use one of: home, scan, admin.",
                 'parse_mode' => 'Markdown',
             ]);
         }
