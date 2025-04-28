@@ -30,6 +30,11 @@ class RoundShipData extends Model
         'damagecost',
     ];
 
+    public function round()
+    {
+        return $this->belongsTo(Round::class, 'round_number', 'number');
+    }
+
     public function ship(): BelongsTo
     {
         return $this->belongsTo(Ship::class);

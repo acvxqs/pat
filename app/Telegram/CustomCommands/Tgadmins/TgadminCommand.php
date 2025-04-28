@@ -12,7 +12,7 @@ class TgadminCommand extends AdminCommand
 {
     protected $name = 'tgadmin';
     protected $description = 'Manage Telegram bot admin settings';
-    protected $usage = '/tgadmin <set|get> <home|scan|admin>';
+    protected $usage = '/tgadmin <set|get> <home|scan|admin|tech>';
     protected $version = '1.0.1';
     protected $private_only = false;
 
@@ -25,7 +25,7 @@ class TgadminCommand extends AdminCommand
         if (count($args) !== 2) {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => "❗ Usage: /tgadmin <set|get> <home|scan|admin>",
+                'text' => "❗ Usage: /tgadmin <set|get> <home|scan|admin|tech>",
             ]);
         }
 
@@ -47,7 +47,7 @@ class TgadminCommand extends AdminCommand
         if (!in_array($key, $validKeys)) {
             return Request::sendMessage([
                 'chat_id' => $chat_id,
-                'text' => "❗ Invalid key: `$key`. Use one of: home, scan, admin.",
+                'text' => "❗ Invalid key: `$key`. Use one of: home, scan, admin, tech.",
                 'parse_mode' => 'Markdown',
             ]);
         }

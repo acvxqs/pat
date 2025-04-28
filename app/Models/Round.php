@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Round extends Model
 {
@@ -14,6 +15,11 @@ class Round extends Model
         'pods_die_when_capping' => 'boolean',
         'structure_killers_die' => 'boolean',
     ];
+
+    public function ticks()
+    {
+        return $this->hasMany(Tick::class, 'round_number', 'number');
+    }
 
     protected static function booted()
     {

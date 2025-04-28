@@ -35,6 +35,7 @@ return new class extends Migration
             $table->boolean('pods_die_when_capping'); // indicates if pods die when capping
             $table->boolean('structure_killers_die'); // indicates if structure killers die
             $table->smallInteger('stealship_steal_die_ratio')->unsigned(); // stealship steal die ratio (percentage)
+            $table->timestamps();
         });
     }
 

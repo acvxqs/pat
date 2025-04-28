@@ -19,7 +19,11 @@ class RoundRaceData extends Model
         'production_time_bonus',
         'universe_trade_tax',
     ];
-
+    public function round()
+    {
+        return $this->belongsTo(Round::class, 'round_number', 'number');
+    }
+    
     public function race(): BelongsTo
     {
         return $this->belongsTo(Race::class);

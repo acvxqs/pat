@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('round_race_data', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('round_number');
-            $table->foreignId('race_id')->constrained()->onDelete('cascade');
+            $table->foreign('round_number')->references('number')->on('rounds');
+            $table->foreignId('race_id')->constrained();
             $table->text('description')->nullable();
             $table->unsignedSmallInteger('max_stealth');
             $table->unsignedSmallInteger('stealth_growth_per_tick');

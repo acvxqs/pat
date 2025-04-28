@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedSmallInteger('round_number');
+            $table->foreign('round_number')->references('number')->on('rounds');
             $table->foreignId('ship_id')->constrained();
             $table->foreignId('races_id')->constrained();
             $table->foreignId('unit_class_id')->constrained();

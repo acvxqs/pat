@@ -20,6 +20,11 @@ class RoundGovernmentData extends Model
         'production_cost',
     ];
 
+    public function round()
+    {
+        return $this->belongsTo(Round::class, 'round_number', 'number');
+    }
+    
     public function government()
     {
         return $this->belongsTo(Government::class);

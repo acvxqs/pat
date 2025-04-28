@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('round_government_data', function (Blueprint $table) {
             $table->id();
             $table->unsignedSmallInteger('round_number');
-            $table->foreignId('government_id')->constrained()->onDelete('cascade');
+            $table->foreign('round_number')->references('number')->on('rounds');
+            $table->foreignId('government_id')->constrained();
         
             $table->text('description')->nullable();
             // Below all unsignedSmallIntegers. They represent percentage values.
