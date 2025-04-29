@@ -35,7 +35,7 @@ class ScraperException extends Exception
             Log::debug($previous->getMessage() . "\n" . $previous->getTraceAsString());
         }
 
-        if ($channelId = Setting::get('home_channel')) {
+        if ($channelId = Setting::get('tech_channel')) {
             Request::sendMessage([
                 'chat_id' => $channelId,
                 'text' => $fullMessage,

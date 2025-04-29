@@ -42,7 +42,7 @@ class TgadminCommand extends AdminCommand
             ]);
         }
 
-        $validKeys = ['home', 'scan', 'admin'];
+        $validKeys = ['home', 'scan', 'admin', 'tech'];
 
         if (!in_array($key, $validKeys)) {
             return Request::sendMessage([
