@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ticks', function (Blueprint $table) {
+        Schema::create('round_ticks', function (Blueprint $table) {
             $table->id();
-            $table->unsignedMediumInteger('number');
             $table->unsignedSmallInteger('round_number');
             $table->foreign('round_number')->references('number')->on('rounds');
+            $table->unsignedMediumInteger('number');
             $table->unique(['number', 'round_number']);
             $table->timestamps();
         });
