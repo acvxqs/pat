@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Eta extends Model
 {
-    protected $fillable = ['value', 'label'];
+    protected $fillable = [
+        'value', 
+        'label'
+    ];
 }
 

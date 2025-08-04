@@ -15,10 +15,34 @@ class Round extends Model
         'pods_die_when_capping' => 'boolean',
         'structure_killers_die' => 'boolean',
     ];
+    protected $fillable = [
+        'name',
+        'current_tick',
+        'tick_speed',
+        'ticking',
+        'last_tick_happened_at',
+        'max_membercount',
+        'members_counting_towards_alliance_score',
+        'xp_per_tick_defending_universe',
+        'xp_per_tick_defending_galaxy',
+        'xp_landing_defense',
+        'max_cap',
+        'max_structures_destroyed',
+        'salvage_from_attacking_ships',
+        'salvage_from_defending_ships',
+        'asteroid_armor',
+        'construction_armor',
+        'damage_done_on_primary_target',
+        'damage_done_on_secondary_target',
+        'damage_done_on_tertiary_target',
+        'pods_die_when_capping',
+        'structure_killers_die',
+        'stealship_steal_die_ratio',
+    ];
 
     public function ticks()
     {
-        return $this->hasMany(Tick::class, 'round_number', 'number');
+        return $this->hasMany(RoundTick::class, 'round_number', 'number');
     }
 
     protected static function booted()

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedSmallInteger('round_number');
             $table->foreign('round_number')->references('number')->on('rounds');
-            $table->unsignedMediumInteger('number');
-            $table->unique(['number', 'round_number']);
+            $table->unsignedMediumInteger('tick');
+            $table->unique(['tick', 'round_number']);
             $table->timestamps();
         });
     }

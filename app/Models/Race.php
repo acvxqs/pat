@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Race extends Model
 {
-    protected $fillable = ['name', 'abbreviation'];
+    protected $fillable = [
+        'name', 
+        'abbreviation'
+    ];
 
     public function rounds(): HasMany
     {
