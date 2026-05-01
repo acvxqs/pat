@@ -16,6 +16,7 @@ class Round extends Model
         'structure_killers_die' => 'boolean',
     ];
     protected $fillable = [
+        'number',
         'name',
         'current_tick',
         'tick_speed',

@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\ScraperException;
 use App\Models\Eta;
+use App\Models\Government;
+use App\Models\RoundGovernmentData;
+use App\Models\RoundRaceData;
 use App\Models\Race;
 use App\Models\Round;
 use App\Models\RoundShipData;
@@ -29,7 +32,7 @@ class PlanetarionScraper
         
             $textBlock = $crawler->filter('#game_status')->text();
         
-            if (!preg_match('/Round (\d+)\s*-\s*(.+)/i', $textBlock, $m)) {
+            if (!preg_match('/Round (\d+)\s*-\s*(.+) Ticker Status/i', $textBlock, $m)) {
                 throw new ScraperException('Failed to match round number and name', 0, ScraperException::GAMESTATUS);
             }
 
@@ -38,7 +41,7 @@ class PlanetarionScraper
         
             $currentTick = self::extractInt($textBlock, '/Current Tick:\s*(\d+)/i', $roundNumber, ScraperException::GAMESTATUS);
 
-            if (!preg_match('/Last Tick Happened At (\d{2}:\d{2}) (\w+) on (.+)/i', $textBlock, $m)) {
+            if (!preg_match('/Last Tick Happened At (\d{2}:\d{2}) (\w+) on (\S+ \S+ \S+ \S+)/i', $textBlock, $m)) {
                 throw new ScraperException('Failed to match last tick timestamp', $roundNumber, ScraperException::GAMESTATUS);
             }
         
@@ -104,7 +107,6 @@ class PlanetarionScraper
                 ])
             );
         } catch (\Throwable $e) {
-            $this->error("Scraping error: " . $e->getMessage());
             throw new ScraperException('Failed to parse game status', $roundNumber ?? 0, ScraperException::GAMESTATUS, $e);
         }
     }
@@ -240,7 +242,7 @@ class PlanetarionScraper
     
                 // Normalize references
                 $ship = Ship::firstOrCreate(['name' => $name]);                 // e.g., Harpy, Locust
-                $race = Race::firstOrFail(['name' => $raceName]);               // e.g., Terran, Cathaar - Note: ParseRaces must be called first
+                $race = Race::where('name', $raceName)->firstOrFail();               // e.g., Terran, Cathaar - Note: ParseRaces must be called first
                 $unitClass = UnitClass::firstOrCreate(['name' => $className]);  // e.g., Fighter, Frigate
                 $weaponType = WeaponType::firstOrCreate(['name' => $type]);     // e.g., Normal, EMP
                 $eta = Eta::firstOrCreate(['value' => $etaValue]);              // e.g., 12, 13
@@ -254,7 +256,7 @@ class PlanetarionScraper
                     'round_number' => $roundNumber,
                     'ship_id' => $ship->id,
                 ], [
-                    'races_id' => $race->id,
+                    'race_id' => $race->id,
                     'unit_class_id' => $unitClass->id,
                     'weapon_type_id' => $weaponType->id,
                     'eta_id' => $eta->id,
