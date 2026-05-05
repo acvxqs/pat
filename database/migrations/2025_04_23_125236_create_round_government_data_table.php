@@ -20,13 +20,13 @@ return new class extends Migration
             $table->text('description')->nullable();
             // Below all unsignedSmallIntegers. They represent percentage values.
             // For example, a value of 50 means 50%.
-            $table->unsignedSmallInteger('mining_output');
-            $table->unsignedSmallInteger('research');
-            $table->unsignedSmallInteger('construction');
-            $table->unsignedSmallInteger('alert');
-            $table->unsignedSmallInteger('stealth');
-            $table->unsignedSmallInteger('production_time');
-            $table->unsignedSmallInteger('production_cost');
+            $table->SmallInteger('mining_output');
+            $table->SmallInteger('research');
+            $table->SmallInteger('construction');
+            $table->SmallInteger('alert');
+            $table->SmallInteger('stealth');
+            $table->SmallInteger('production_time');
+            $table->SmallInteger('production_cost');
             
             $table->timestamps();
         

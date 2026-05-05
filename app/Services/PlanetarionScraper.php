@@ -135,13 +135,13 @@ class PlanetarionScraper
                     : null;
 
                 $fields = [
-                    'mining_output' => self::extractInt($details, '/Mining output is (\d+)% (higher|lower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'research' => self::extractInt($details, '/Research is (\d+)% (faster|slower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'construction' => self::extractInt($details, '/Construction is (\d+)% (faster|slower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'alert' => self::extractInt($details, '/Alert is (\d+)% (higher|lower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'stealth' => self::extractInt($details, '/Stealth is (\d+)% (higher|lower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'production_time' => self::extractInt($details, '/Production time is (\d+)% (faster|slower)./i', $roundNumber, ScraperException::GOVERNMENT),
-                    'production_cost' => self::extractInt($details, '/Production cost is (\d+)% (higher|lower)./i', $roundNumber, ScraperException::GOVERNMENT),
+                    'mining_output' => self::extractInt($details, '/Mining output is (\d+)% (higher|lower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'research' => self::extractInt($details, '/Research is (\d+)% (faster|slower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'construction' => self::extractInt($details, '/Construction is (\d+)% (faster|slower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'alert' => self::extractInt($details, '/Alert is (\d+)% (higher|lower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'stealth' => self::extractInt($details, '/Stealth is (\d+)% (higher|lower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'production_time' => self::extractInt($details, '/Production time is (\d+)% (faster|slower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
+                    'production_cost' => self::extractInt($details, '/Production cost is (\d+)% (higher|lower)\./i', $roundNumber, ScraperException::GOVERNMENT, 0),
                 ];
 
                 $gov = Government::firstOrCreate(['name' => $name]);
@@ -191,13 +191,13 @@ class PlanetarionScraper
                     : null;
     
                 $fields = [
-                    'max_stealth' => self::extractInt($details, '/Max stealth: (\d+)/i', $roundNumber, ScraperException::RACES),
-                    'stealth_growth_per_tick' => self::extractInt($details, '/Stealth Growth\/Tick: (\d+)/i', $roundNumber, ScraperException::RACES),
-                    'base_construction_units' => self::extractInt($details, '/Base Construction Units: (\d+)/i', $roundNumber, ScraperException::RACES),
-                    'base_research_points' => self::extractInt($details, '/Base Research Points: (\d+)/i', $roundNumber, ScraperException::RACES),
-                    'salvage_bonus' => self::extractInt($details, '/Salvage Bonus: (\d+)/i', $roundNumber, ScraperException::RACES),
-                    'production_time_bonus' => self::extractInt($details, '/Production Time bonus: (\d+)%/i', $roundNumber, ScraperException::RACES),
-                    'universe_trade_tax' => self::extractInt($details, '/Universe Trade Tax: (\d+)%/i', $roundNumber, ScraperException::RACES),
+                    'max_stealth' => self::extractInt($details, '/Max stealth: (\d+)/i', $roundNumber, ScraperException::RACES),                            // required per race
+                    'stealth_growth_per_tick' => self::extractInt($details, '/Stealth Growth\/Tick: (\d+)/i', $roundNumber, ScraperException::RACES),       // required per race
+                    'base_construction_units' => self::extractInt($details, '/Base Construction Units: (\d+)/i', $roundNumber, ScraperException::RACES),    // required per race
+                    'base_research_points' => self::extractInt($details, '/Base Research Points: (\d+)/i', $roundNumber, ScraperException::RACES),          // required per race
+                    'salvage_bonus' => self::extractInt($details, '/Salvage Bonus: (\d+)/i', $roundNumber, ScraperException::RACES, 0),                     // optional, default value used
+                    'production_time_bonus' => self::extractInt($details, '/Production Time bonus: (\d+)%/i', $roundNumber, ScraperException::RACES, 0),    // optional, default value used
+                    'universe_trade_tax' => self::extractInt($details, '/Universe Trade Tax: (\d+)%/i', $roundNumber, ScraperException::RACES),             // required per race                
                 ];
     
                 $race = Race::firstOrCreate([
@@ -229,23 +229,23 @@ class PlanetarionScraper
             $response = $client->get($url);
             $xml = new SimpleXMLElement($response->getBody()->getContents());
     
-            foreach ($xml->ships->ship as $shipNode) {
+            foreach ($xml->ship as $shipNode) {
                 $name = (string) $shipNode->name;                                   // e.g., Thief
-                $raceName = ucfirst(strtolower(trim((string) $shipNode->race)));    // e.g., Zikonian
-                $className = ucfirst(strtolower(trim((string) $shipNode->class)));  // e.g., Frigate
-                $type = strtoupper(trim((string) $shipNode->type));                 // e.g., Steal
+                $raceName = trim((string) $shipNode->race);                         // e.g., Zikonian
+                $className = trim((string) $shipNode->class);                       // e.g., Frigate
+                $type = trim((string) $shipNode->type);                             // e.g., Steal
                 $etaValue = (int) $shipNode->baseeta;                               // e.g., 13    
     
-                $target1Name = ucfirst(strtolower(trim((string) $shipNode->target1)));
-                $target2Name = ucfirst(strtolower(trim((string) $shipNode->target2)));
-                $target3Name = ucfirst(strtolower(trim((string) $shipNode->target3)));
+                $target1Name = trim((string) $shipNode->target1);
+                $target2Name = trim((string) $shipNode->target2);
+                $target3Name = trim((string) $shipNode->target3);
     
                 // Normalize references
-                $ship = Ship::firstOrCreate(['name' => $name]);                 // e.g., Harpy, Locust
-                $race = Race::where('name', $raceName)->firstOrFail();               // e.g., Terran, Cathaar - Note: ParseRaces must be called first
-                $unitClass = UnitClass::firstOrCreate(['name' => $className]);  // e.g., Fighter, Frigate
-                $weaponType = WeaponType::firstOrCreate(['name' => $type]);     // e.g., Normal, EMP
-                $eta = Eta::firstOrCreate(['value' => $etaValue]);              // e.g., 12, 13
+                $ship = Ship::firstOrCreate(['name' => $name]);                     // e.g., Harpy, Locust
+                $race = Race::firstWhere('name', $raceName);                        // e.g., Terran, Cathaar - Note: ParseRaces must be called first
+                $unitClass = UnitClass::firstOrCreate(['name' => $className]);      // e.g., Fighter, Frigate
+                $weaponType = WeaponType::firstOrCreate(['name' => $type]);         // e.g., Normal, EMP
+                $eta = Eta::firstOrCreate(['value' => $etaValue]);                  // e.g., 12, 13
     
                 $target1 = UnitClass::firstOrCreate(['name' => $target1Name]);
                 $target2 = $target2Name !== '' ? UnitClass::firstOrCreate(['name' => $target2Name]) : null;
@@ -256,7 +256,7 @@ class PlanetarionScraper
                     'round_number' => $roundNumber,
                     'ship_id' => $ship->id,
                 ], [
-                    'race_id' => $race->id,
+                    'races_id' => $race->id,
                     'unit_class_id' => $unitClass->id,
                     'weapon_type_id' => $weaponType->id,
                     'eta_id' => $eta->id,
@@ -269,9 +269,9 @@ class PlanetarionScraper
                     'armor' => (int) $shipNode->armor,
                     'damage' => (int) $shipNode->damage,
                     'empres' => (int) $shipNode->empres,
-                    'metal' => (int) $shipNode->metal,
-                    'crystal' => (int) $shipNode->crystal,
-                    'eonium' => (int) $shipNode->eonium,
+                    'cost_m' => (int) $shipNode->metal,
+                    'cost_c' => (int) $shipNode->crystal,
+                    'cost_e' => (int) $shipNode->eonium,
                     'armorcost' => (int) $shipNode->armorcost,
                     'damagecost' => (int) $shipNode->damagecost,
                 ]);
@@ -318,7 +318,7 @@ class PlanetarionScraper
         $html = $response->getBody()->getContents();
     }
 
-    private static function extractInt(string $text, string $regex, int $roundNumber = 0, int $errorCode = ScraperException::GENERIC): int
+    private static function extractInt(string $text, string $regex, int $roundNumber = 0, int $errorCode = ScraperException::GENERIC, ?int $default = null): int
     {
         if (preg_match($regex, $text, $m)) {
             $value = (int) $m[1];
@@ -328,10 +328,13 @@ class PlanetarionScraper
             }
             return $value;
         }
-    
-        throw new ScraperException("Failed to extract Int from text: {$text}", $roundNumber, $errorCode);
-    }
 
+        if ($default !== null) {
+            return $default;
+        }
+
+        throw new ScraperException("Failed to extract Int from text: {$text} with regex: {$regex}", $roundNumber, $errorCode);
+    }
     private static function extractSeconds(string $text, string $regex, int $roundNumber = 0, int $errorCode = ScraperException::GENERIC): int
     {
         if (preg_match($regex, $text, $m)) {
@@ -339,9 +342,8 @@ class PlanetarionScraper
             $unit = strtolower($m[2]);
             return $unit === 'hour' ? $value * 3600 : $value * 60;
         }
-        throw new ScraperException("Failed to extract Seconds from text: {$text}", $roundNumber, $errorCode);
+        throw new ScraperException("Failed to extract Seconds from text: {$text} with regex: {$regex}", $roundNumber, $errorCode);
     }
-
     private static function extractBoolean(string $text, string $regex, int $roundNumber = 0, int $errorCode = ScraperException::GENERIC): bool
     {
         if (preg_match($regex, $text, $m)) {
@@ -352,7 +354,7 @@ class PlanetarionScraper
             }
             return false;
         }
-        throw new ScraperException("Failed to extract Boolean from text: {$text}", $roundNumber, $errorCode);
+        throw new ScraperException("Failed to extract Boolean from text: {$text} with regex: {$regex}", $roundNumber, $errorCode);
     }
 }
 

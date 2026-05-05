@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\VerifyCsrfToken;
 
@@ -20,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             VerifyCsrfToken::class,
         ]);
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->command('scrape:game-status')->everyMinute();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
